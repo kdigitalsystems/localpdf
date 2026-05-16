@@ -48,10 +48,20 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Stamp build version into index.html
+        env:
+          COMMIT_SHA: ${{ github.sha }}
         run: |
-          SHORT="${GITHUB_SHA:0:7}"
-          DATE="$(date -u +%Y-%m-%d)"
-          sed -i "s/__BUILD_VERSION__/${SHORT} ${DATE}/g" index.html
+          python3 - <<'EOF'
+          import os, datetime
+          sha  = os.environ['COMMIT_SHA'][:7]
+          date = datetime.date.today().isoformat()
+          ver  = f'{sha} {date}'
+          html = open('index.html').read()
+          if '__BUILD_VERSION__' not in html:
+              print('ERROR: placeholder not found in index.html'); exit(1)
+          open('index.html', 'w').write(html.replace('__BUILD_VERSION__', ver))
+          print(f'Stamped build version: {ver}')
+          EOF
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
