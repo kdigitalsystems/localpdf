@@ -1,4 +1,4 @@
-const CACHE = 'nilpdf-v4';
+const CACHE = 'nilpdf-v5';
 // pdf_worker.js is intentionally excluded — it must always be fetched fresh
 // so stale cached workers (e.g. with broken boot sequences) never get stuck.
 const SHELL = ['/', '/index.html', '/assets/css/main.css'];
@@ -21,10 +21,7 @@ function addSecurityHeaders(res) {
     const h = new Headers(res.headers);
     h.set('Cross-Origin-Opener-Policy', 'same-origin');
     h.set('Cross-Origin-Embedder-Policy', 'credentialless');
-    // Override CSP with a permissive policy — eval() is required by Pyodide (WASM) and Google Analytics.
-    // Deletion alone is not enough; explicitly setting ensures no restrictive policy survives.
-    h.set('Content-Security-Policy', "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; worker-src * blob:;");
-    h.delete('Content-Security-Policy-Report-Only');
+    // Do not set a CSP — GitHub Pages sends none, so adding one here only causes problems.
     return new Response(res.body, { status: res.status, statusText: res.statusText, headers: h });
 }
 
