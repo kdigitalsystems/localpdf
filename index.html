@@ -731,13 +731,11 @@
                 list.appendChild(li);
             });
             const count = mergeFilesArray.length;
-            if (isReady) {
-                document.getElementById('merge-btn').disabled = count < 2;
-                updateStatus('status', count === 0
-                    ? 'Add at least 2 PDFs to merge.'
-                    : count === 1 ? '1 file added — need at least one more.'
-                    : `${count} files ready to merge.`, count >= 2 ? 'text-green' : '');
-            }
+            document.getElementById('merge-btn').disabled = count < 2;
+            updateStatus('status', count === 0
+                ? 'Add at least 2 PDFs to merge.'
+                : count === 1 ? '1 file added — need at least one more.'
+                : `${count} files ready to merge.`, count >= 2 ? 'text-green' : '');
             if (mergeSortable) { mergeSortable.destroy(); mergeSortable = null; }
             if (count > 1) {
                 mergeSortable = new Sortable(list, {
