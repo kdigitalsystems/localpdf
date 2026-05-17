@@ -48,9 +48,32 @@
             "@type": "HowToStep",
             "position": 3,
             "name": "Compress",
-            "text": "Click \"Optimize Size\" \u2014 the smaller PDF downloads automatically."
+            "text": "Click \"Optimize Size\" — the smaller PDF downloads automatically."
       }
 ]
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is compressing a PDF really free?",
+          "acceptedAnswer": {"@type": "Answer", "text": "Yes — completely free, unlimited use, no account required."}
+        },
+        {
+          "@type": "Question",
+          "name": "Are my PDF files safe when I compress them?",
+          "acceptedAnswer": {"@type": "Answer", "text": "Yes. Your files never leave your device. Everything runs in your browser using WebAssembly. NilPDF has no backend server."}
+        },
+        {
+          "@type": "Question",
+          "name": "How much will my PDF shrink?",
+          "acceptedAnswer": {"@type": "Answer", "text": "It depends on the content — PDFs with large images typically compress 30–70%. Text-only PDFs compress less."}
+        }
+      ]
     }
     </script>
     <style>
@@ -83,6 +106,16 @@
         .privacy-strip strong { color: var(--text); }
         footer { font-size: 0.8rem; color: var(--muted); border-top: 1px solid var(--border); padding-top: 1.5rem; }
         footer a { color: var(--accent); text-decoration: none; }
+        .body-text { font-size: 0.95rem; color: var(--text); margin-bottom: 2rem; line-height: 1.7; }
+        .faq { margin-bottom: 2.5rem; }
+        .faq h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; }
+        .faq-item { margin-bottom: 1.25rem; }
+        .faq-item h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.3rem; }
+        .faq-item p { font-size: 0.9rem; color: var(--muted); line-height: 1.6; }
+        .related-tools { margin-bottom: 2rem; font-size: 0.85rem; }
+        .related-tools p { color: var(--muted); margin-bottom: 0.5rem; }
+        .related-tools a { color: var(--accent); text-decoration: none; margin-right: 1rem; }
+        .related-tools a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -98,12 +131,33 @@
             <li>Shows before/after file size comparison</li>
             <li>No uploads — your files stay on your device</li>
         </ul>
+        <p class="body-text">NilPDF Compress shrinks PDFs by optimising image data and removing redundant cross-reference tables — all inside your browser. No account, no size limits, no waiting for a server to process your files. Simply drop your PDF, click compress, and the smaller file downloads instantly.</p>
         <div class="privacy-strip">
             <strong>100% private.</strong> Your files are processed entirely inside your browser using WebAssembly.
             Nothing is uploaded to any server. NilPDF has no backend — there is no server to send your files to.
         </div>
+        <section class="faq">
+            <h2>Frequently Asked Questions</h2>
+            <div class="faq-item">
+                <h3>Is compressing a PDF really free?</h3>
+                <p>Yes — completely free, unlimited use, no account required.</p>
+            </div>
+            <div class="faq-item">
+                <h3>Are my PDF files safe when I compress them?</h3>
+                <p>Your files never leave your device. All processing happens in your browser using WebAssembly (Pyodide). NilPDF has no server — there is nothing to upload to.</p>
+            </div>
+            <div class="faq-item">
+                <h3>How much will my PDF shrink?</h3>
+                <p>It depends on the content — PDFs with large images typically compress 30–70%. Text-only PDFs compress less.</p>
+            </div>
+        </section>
+        <nav class="related-tools">
+            <p>Other free PDF tools:</p>
+            <a href="https://nilpdf.com/merge-pdf/">Merge PDF</a>
+            <a href="https://nilpdf.com/remove-pdf-metadata/">Remove Metadata</a>
+        </nav>
         <footer>
-            <p>Part of <a href="https://nilpdf.com/">NilPDF</a> — 13 free PDF tools, zero uploads.</p>
+            <p>Part of <a href="https://nilpdf.com/">NilPDF</a> — 14 free PDF tools, zero uploads.</p>
         </footer>
     </div>
 </body>
