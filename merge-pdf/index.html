@@ -54,9 +54,32 @@
             "@type": "HowToStep",
             "position": 4,
             "name": "Merge",
-            "text": "Click \"Merge Files\" \u2014 the combined PDF downloads automatically."
+            "text": "Click \"Merge Files\" — the combined PDF downloads automatically."
       }
 ]
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is merging PDF files really free?",
+          "acceptedAnswer": {"@type": "Answer", "text": "Yes — completely free, unlimited use, no account required."}
+        },
+        {
+          "@type": "Question",
+          "name": "Are my PDF files safe when I merge them?",
+          "acceptedAnswer": {"@type": "Answer", "text": "Yes. Your files never leave your device. Everything runs in your browser using WebAssembly. NilPDF has no backend server."}
+        },
+        {
+          "@type": "Question",
+          "name": "How many PDFs can I merge at once?",
+          "acceptedAnswer": {"@type": "Answer", "text": "There's no limit. You can drag in as many files as you need, reorder them, and merge into one."}
+        }
+      ]
     }
     </script>
     <style>
@@ -89,6 +112,16 @@
         .privacy-strip strong { color: var(--text); }
         footer { font-size: 0.8rem; color: var(--muted); border-top: 1px solid var(--border); padding-top: 1.5rem; }
         footer a { color: var(--accent); text-decoration: none; }
+        .body-text { font-size: 0.95rem; color: var(--text); margin-bottom: 2rem; line-height: 1.7; }
+        .faq { margin-bottom: 2.5rem; }
+        .faq h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; }
+        .faq-item { margin-bottom: 1.25rem; }
+        .faq-item h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.3rem; }
+        .faq-item p { font-size: 0.9rem; color: var(--muted); line-height: 1.6; }
+        .related-tools { margin-bottom: 2rem; font-size: 0.85rem; }
+        .related-tools p { color: var(--muted); margin-bottom: 0.5rem; }
+        .related-tools a { color: var(--accent); text-decoration: none; margin-right: 1rem; }
+        .related-tools a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -104,12 +137,33 @@
             <li>Password-protected PDFs supported</li>
             <li>Files never leave your device — zero uploads</li>
         </ul>
+        <p class="body-text">NilPDF Merge runs entirely in your browser using WebAssembly — no file ever leaves your device. Whether you're combining contracts, reports, or scanned documents, the result is a single, clean PDF downloaded directly to you. There are no file size limits, no account required, and no data sent to any server.</p>
         <div class="privacy-strip">
             <strong>100% private.</strong> Your files are processed entirely inside your browser using WebAssembly.
             Nothing is uploaded to any server. NilPDF has no backend — there is no server to send your files to.
         </div>
+        <section class="faq">
+            <h2>Frequently Asked Questions</h2>
+            <div class="faq-item">
+                <h3>Is merging PDF files really free?</h3>
+                <p>Yes — completely free, unlimited use, no account required.</p>
+            </div>
+            <div class="faq-item">
+                <h3>Are my PDF files safe when I merge them?</h3>
+                <p>Your files never leave your device. All processing happens in your browser using WebAssembly (Pyodide). NilPDF has no server — there is nothing to upload to.</p>
+            </div>
+            <div class="faq-item">
+                <h3>How many PDFs can I merge at once?</h3>
+                <p>There's no limit. You can drag in as many files as you need, reorder them, and merge into one.</p>
+            </div>
+        </section>
+        <nav class="related-tools">
+            <p>Other free PDF tools:</p>
+            <a href="https://nilpdf.com/split-pdf/">Split PDF</a>
+            <a href="https://nilpdf.com/compress-pdf/">Compress PDF</a>
+        </nav>
         <footer>
-            <p>Part of <a href="https://nilpdf.com/">NilPDF</a> — 13 free PDF tools, zero uploads.</p>
+            <p>Part of <a href="https://nilpdf.com/">NilPDF</a> — 14 free PDF tools, zero uploads.</p>
         </footer>
     </div>
 </body>
