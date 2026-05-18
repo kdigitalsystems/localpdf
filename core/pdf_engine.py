@@ -26,7 +26,7 @@ def _post_progress(status_id, pct, msg):
     except Exception:
         pass
 
-def _compress_images(writer, quality=75):
+def _compress_images(writer, quality=75, status_id="", start_pct=62, end_pct=92):
     """Best-effort re-compression of raw image XObjects to JPEG. Silent on failure."""
     try:
         from PIL import Image
@@ -34,67 +34,70 @@ def _compress_images(writer, quality=75):
     except ImportError:
         return
 
-    for page in writer.pages:
+    pages = writer.pages
+    total_pages = max(len(pages), 1)
+    for page_num, page in enumerate(pages):
         try:
             resources = page.get("/Resources")
-            if resources is None:
-                continue
-            if hasattr(resources, 'get_object'):
-                resources = resources.get_object()
-            xobjects = resources.get("/XObject")
-            if xobjects is None:
-                continue
-            if hasattr(xobjects, 'get_object'):
-                xobjects = xobjects.get_object()
+            if resources is not None:
+                if hasattr(resources, 'get_object'):
+                    resources = resources.get_object()
+                xobjects = resources.get("/XObject")
+                if xobjects is not None:
+                    if hasattr(xobjects, 'get_object'):
+                        xobjects = xobjects.get_object()
 
-            for key in list(xobjects.keys()):
-                try:
-                    xobj_ref = xobjects[key]
-                    xobj = xobj_ref.get_object() if hasattr(xobj_ref, 'get_object') else xobj_ref
+                    for key in list(xobjects.keys()):
+                        try:
+                            xobj_ref = xobjects[key]
+                            xobj = xobj_ref.get_object() if hasattr(xobj_ref, 'get_object') else xobj_ref
 
-                    if str(xobj.get("/Subtype")) != "/Image":
-                        continue
+                            if str(xobj.get("/Subtype")) != "/Image":
+                                continue
 
-                    current_filter = xobj.get("/Filter")
-                    if current_filter is not None:
-                        if any(f in str(current_filter) for f in ("DCTDecode", "JPXDecode")):
+                            current_filter = xobj.get("/Filter")
+                            if current_filter is not None:
+                                if any(f in str(current_filter) for f in ("DCTDecode", "JPXDecode")):
+                                    continue
+
+                            bpc = int(xobj.get("/BitsPerComponent", 8))
+                            if bpc != 8:
+                                continue
+
+                            width = int(xobj["/Width"])
+                            height = int(xobj["/Height"])
+                            cs_str = str(xobj.get("/ColorSpace", "/DeviceRGB"))
+                            if cs_str == "/DeviceRGB":
+                                mode, bpp = "RGB", 3
+                            elif cs_str == "/DeviceGray":
+                                mode, bpp = "L", 1
+                            else:
+                                continue
+
+                            raw = xobj.get_data()
+                            if len(raw) != width * height * bpp:
+                                continue
+
+                            img = Image.frombytes(mode, (width, height), raw)
+                            buf = io.BytesIO()
+                            img.save(buf, format="JPEG", quality=quality, optimize=True)
+                            jpeg_bytes = buf.getvalue()
+
+                            if len(jpeg_bytes) >= len(raw):
+                                continue
+
+                            xobj._raw_data = jpeg_bytes
+                            xobj._data = None
+                            xobj[NameObject("/Filter")] = NameObject("/DCTDecode")
+                            xobj[NameObject("/Length")] = NumberObject(len(jpeg_bytes))
+                            xobj.pop(NameObject("/DecodeParms"), None)
+                        except Exception:
                             continue
-
-                    bpc = int(xobj.get("/BitsPerComponent", 8))
-                    if bpc != 8:
-                        continue
-
-                    width = int(xobj["/Width"])
-                    height = int(xobj["/Height"])
-                    cs_str = str(xobj.get("/ColorSpace", "/DeviceRGB"))
-                    if cs_str == "/DeviceRGB":
-                        mode, bpp = "RGB", 3
-                    elif cs_str == "/DeviceGray":
-                        mode, bpp = "L", 1
-                    else:
-                        continue
-
-                    raw = xobj.get_data()
-                    if len(raw) != width * height * bpp:
-                        continue
-
-                    img = Image.frombytes(mode, (width, height), raw)
-                    buf = io.BytesIO()
-                    img.save(buf, format="JPEG", quality=quality, optimize=True)
-                    jpeg_bytes = buf.getvalue()
-
-                    if len(jpeg_bytes) >= len(raw):
-                        continue
-
-                    xobj._raw_data = jpeg_bytes
-                    xobj._data = None
-                    xobj[NameObject("/Filter")] = NameObject("/DCTDecode")
-                    xobj[NameObject("/Length")] = NumberObject(len(jpeg_bytes))
-                    xobj.pop(NameObject("/DecodeParms"), None)
-                except Exception:
-                    continue
         except Exception:
-            continue
+            pass
+        _post_progress(status_id,
+                       int(start_pct + (page_num + 1) / total_pages * (end_pct - start_pct)),
+                       f"Optimising images on page {page_num + 1} of {total_pages}...")
 
 
 # ── Producer stamp (V8) ────────────────────────────────────────────────────
@@ -118,12 +121,12 @@ def process_compress(js_buf, status_id="", password=""):
             page.compress_content_streams()
         except Exception:
             pass
-        _post_progress(status_id, int((i + 1) / total * 70), f"Compressing page {i + 1} of {total}...")
+        _post_progress(status_id, int((i + 1) / total * 60), f"Compressing page {i + 1} of {total}...")
         if i % 20 == 19:
             gc.collect()
 
-    _post_progress(status_id, 75, "Re-compressing images...")
-    _compress_images(writer)
+    _compress_images(writer, status_id=status_id, start_pct=62, end_pct=92)
+    _post_progress(status_id, 95, "Writing output...")
     _stamp_producer(writer)
 
     out_stream = io.BytesIO()
@@ -132,10 +135,14 @@ def process_compress(js_buf, status_id="", password=""):
 
 
 def process_anonymize(js_buf, status_id="", password=""):
+    _post_progress(status_id, 5, "Reading PDF...")
     reader = _open_reader(_ensure_py(js_buf), password)
     writer = PdfWriter()
-    for page in reader.pages:
+    total = max(len(reader.pages), 1)
+    for i, page in enumerate(reader.pages):
         writer.add_page(page)
+        _post_progress(status_id, int(5 + (i + 1) / total * 80), f"Copying page {i + 1} of {total}...")
+    _post_progress(status_id, 90, "Clearing metadata...")
     writer.add_metadata({
         "/Author": "", "/Creator": "", "/Producer": "NilPDF (Private)",
         "/Subject": "", "/Title": "", "/Keywords": "",
@@ -145,6 +152,7 @@ def process_anonymize(js_buf, status_id="", password=""):
         writer._root_object.pop("/Metadata", None)
     except Exception:
         pass
+    _post_progress(status_id, 96, "Writing output...")
     out_stream = io.BytesIO()
     writer.write(out_stream)
     return out_stream.getvalue()

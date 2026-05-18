@@ -127,6 +127,7 @@
             <label class="footer-credit-label"><input type="checkbox" class="footer-credit-cb" id="compress-footer"> Add "Processed with NilPDF.com" to footer</label>
             <button id="compress-btn" class="primary-btn">Optimize Size</button>
             <div id="compress-status" class="status-message" role="status" aria-live="polite" aria-atomic="true">Ready.</div>
+            <progress id="compress-progress" class="pdf-progress" value="0" max="100" style="display:none"></progress>
         </div>
 
         <!-- ANONYMIZE -->
@@ -140,6 +141,7 @@
             <input type="password" id="anonymize-password" class="text-input password-input" placeholder="🔒 Password (if encrypted)">
             <button id="anonymize-btn" class="primary-btn">Strip Identifiers</button>
             <div id="anonymize-status" class="status-message" role="status" aria-live="polite" aria-atomic="true">Ready.</div>
+            <progress id="anonymize-progress" class="pdf-progress" value="0" max="100" style="display:none"></progress>
         </div>
 
         <!-- SPLIT -->
@@ -488,6 +490,8 @@
 
             } else if (type === 'PROGRESS') {
                 updateStatus(e.data.id, e.data.msg, "");
+                const progBar = document.getElementById(e.data.id.replace('-status', '-progress'));
+                if (progBar) { progBar.value = e.data.pct; progBar.style.display = 'block'; }
 
             } else if (type === 'SUCCESS') {
                 // Two-pass footer credit: intercept result and run ADD_FOOTER before downloading
@@ -553,10 +557,14 @@
                     updateStatus(id, "Done! File downloaded.", "text-green");
                 }
                 pendingCompressInfo = null;
+                const doneBar = document.getElementById(id.replace('-status', '-progress'));
+                if (doneBar) doneBar.style.display = 'none';
 
             } else if (type === 'ERROR') {
                 updateStatus(id, "Error: " + error, "text-red");
                 pendingCompressInfo = null;
+                const errBar = document.getElementById(id.replace('-status', '-progress'));
+                if (errBar) errBar.style.display = 'none';
             }
         };
 
