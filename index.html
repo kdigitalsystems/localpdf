@@ -342,6 +342,7 @@
             <input type="password" id="repair-password" class="text-input password-input" placeholder="🔒 Password (if encrypted)">
             <button id="repair-btn" class="primary-btn">Recover PDF</button>
             <div id="repair-status" class="status-message" role="status" aria-live="polite" aria-atomic="true">Ready.</div>
+            <progress id="repair-progress" class="pdf-progress" value="0" max="100" style="display:none"></progress>
         </div>
         <footer class="app-footer">
             <p>A property of <strong>K Digital Systems LLC</strong></p>
@@ -491,7 +492,14 @@
             } else if (type === 'PROGRESS') {
                 updateStatus(e.data.id, e.data.msg, "");
                 const progBar = document.getElementById(e.data.id.replace('-status', '-progress'));
-                if (progBar) { progBar.value = e.data.pct; progBar.style.display = 'block'; }
+                if (progBar) {
+                    progBar.style.display = 'block';
+                    if (e.data.pct >= 95) {
+                        progBar.removeAttribute('value'); // indeterminate pulse — write phase has no sub-steps
+                    } else {
+                        progBar.value = e.data.pct;
+                    }
+                }
 
             } else if (type === 'SUCCESS') {
                 // Two-pass footer credit: intercept result and run ADD_FOOTER before downloading
@@ -558,13 +566,13 @@
                 }
                 pendingCompressInfo = null;
                 const doneBar = document.getElementById(id.replace('-status', '-progress'));
-                if (doneBar) doneBar.style.display = 'none';
+                if (doneBar) { doneBar.style.display = 'none'; doneBar.value = 0; }
 
             } else if (type === 'ERROR') {
                 updateStatus(id, "Error: " + error, "text-red");
                 pendingCompressInfo = null;
                 const errBar = document.getElementById(id.replace('-status', '-progress'));
-                if (errBar) errBar.style.display = 'none';
+                if (errBar) { errBar.style.display = 'none'; errBar.value = 0; }
             }
         };
 

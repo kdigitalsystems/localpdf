@@ -457,7 +457,7 @@ select.text-input {
 
 .build-version {
     font-size: 0.68rem;
-    opacity: 0.45;
+    color: var(--text-muted);
     margin-top: 0.2rem;
     font-family: monospace;
 }
@@ -775,3 +775,17 @@ kbd {
 .pdf-progress::-webkit-progress-bar  { background: var(--border); border-radius: 3px; }
 .pdf-progress::-webkit-progress-value { background: var(--accent); border-radius: 3px; transition: width 0.25s ease; }
 .pdf-progress::-moz-progress-bar     { background: var(--accent); border-radius: 3px; }
+/* indeterminate shimmer (write phase) */
+@keyframes pdf-progress-shimmer {
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(400%); }
+}
+.pdf-progress:not([value])::after {
+    content: '';
+    display: block;
+    height: 100%;
+    width: 25%;
+    background: var(--accent);
+    border-radius: 3px;
+    animation: pdf-progress-shimmer 1.2s ease-in-out infinite;
+}

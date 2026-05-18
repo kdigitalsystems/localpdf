@@ -454,12 +454,13 @@ def process_add_footer(js_buf, status_id="", password=""):
 
 def process_repair(js_buf, status_id="", password=""):
     """Attempt to recover pages from a corrupted or truncated PDF."""
+    _post_progress(status_id, 2, "Reading file data…")
     buf = _ensure_py(js_buf)
-    _post_progress(status_id, 5, "Attempting to open PDF…")
+    _post_progress(status_id, 5, "Parsing PDF structure (may take a moment for large files)…")
     try:
         reader = PdfReader(io.BytesIO(buf), strict=True)
     except Exception:
-        _post_progress(status_id, 15, "Strict parse failed — retrying with error recovery…")
+        _post_progress(status_id, 15, "Strict parse failed — retrying with lenient recovery…")
         reader = PdfReader(io.BytesIO(buf), strict=False)
     if reader.is_encrypted:
         result = reader.decrypt(password or "")
