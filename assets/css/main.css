@@ -759,3 +759,19 @@ kbd {
     .tab-btn { font-size: 0.7rem; padding: 0.25rem 0.45rem; }
     .app-header h2 { font-size: 1.3rem; }
 }
+/* ── Progress bar (squeeze / scrub) ─────────────────────────────────────── */
+.pdf-progress {
+    display: block;
+    width: 100%;
+    height: 5px;
+    margin-top: 0.45rem;
+    border: none;
+    border-radius: 3px;
+    background: var(--border);
+    overflow: hidden;
+    appearance: none;
+    -webkit-appearance: none;
+}
+.pdf-progress::-webkit-progress-bar  { background: var(--border); border-radius: 3px; }
+.pdf-progress::-webkit-progress-value { background: var(--accent); border-radius: 3px; transition: width 0.25s ease; }
+.pdf-progress::-moz-progress-bar     { background: var(--accent); border-radius: 3px; }
